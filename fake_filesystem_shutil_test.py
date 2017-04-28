@@ -33,6 +33,7 @@ class FakeShutilModuleTest(unittest.TestCase):
     def setUp(self):
         self.filesystem = fake_filesystem.FakeFilesystem(path_separator='/', total_size=1000)
         self.shutil = fake_filesystem_shutil.FakeShutilModule(self.filesystem)
+        self.os = fake_filesystem.FakeOsModule(self.filesystem)
 
     def testRmtree(self):
         directory = 'xyzzy'
@@ -44,6 +45,17 @@ class FakeShutilModuleTest(unittest.TestCase):
         self.assertFalse(self.filesystem.Exists(directory))
         self.assertFalse(self.filesystem.Exists('%s/subdir' % directory))
         self.assertFalse(self.filesystem.Exists('%s/subfile' % directory))
+
+    def testRmtreeRelativePath(self):
+        directory = '/xyzzy/foo'
+        self.filesystem.CreateDirectory(directory)
+        self.filesystem.CreateDirectory('%s/subdir' % directory)
+        self.filesystem.CreateDirectory('%s/subdir/subsubdir' % directory)
+        self.os.chdir(directory)
+        self.assertEqual(self.os.path.abspath(self.os.curdir), directory)
+        self.assertTrue(self.filesystem.Exists('subdir/subsubdir'))
+        self.shutil.rmtree('subdir/subsubdir')
+        self.assertFalse(self.filesystem.Exists('subdir/subsubdir'))
 
     def testRmtreeWithTrailingSlash(self):
         directory = 'xyzzy'
