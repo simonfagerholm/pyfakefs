@@ -25,9 +25,12 @@ modules from `pyfakefs`.  Further, the `open()` built-in is bound to a fake
 `open()`.  In Python 2, built-in `file()` is similarly bound to the fake
 `open()`.
 
-It is expected that `setUpPyfakefs()` be invoked at the beginning of the derived
-class' `setUp()` method.  There is no need to add anything to the derived
-class' `tearDown()` method.
+It is expected that `setUpPyfakefs()` be invoked in the derived class' `setUp()`
+method.  Within `setUp()`, code that appears before `setUpPyfakefs()` will use
+the real file system; code after `setUpPyfakefs()` will use the fake file
+system.
+
+You need not add anything to the derived class' `tearDown()` method.
 
 During the test, everything uses the fake file system and modules.  This means
 that even in your test fixture, familiar functions like `open()` and
@@ -66,8 +69,8 @@ def load_doctests(loader, tests, ignore, module,
                   additional_skip_names=None, patch_path=True):  # pylint: disable=unused-argument
     """Load the doctest tests for the specified module into unittest.
         Args:
-            loader, tests, ignore : arguments passed in from `load_tests()`
-            module: module under test 
+            loader, tests, ignore: arguments passed in from `load_tests()`
+            module: module under test
             additional_skip_names: see :py:class:`TestCase` for an explanation
             patch_path: see :py:class:`TestCase` for an explanation
 
@@ -94,10 +97,10 @@ class TestCase(unittest.TestCase):
 
         Args:
             methodName: the name of the test method (same as unittest.TestCase)
-            additional_skip_names: names of modules inside of which no module
+            additional_skip_names: Names of modules inside of which no module
                 replacement shall be performed, in addition to the names in
                 attribute :py:attr:`fake_filesystem_unittest.Patcher.SKIPNAMES`.
-            patch_path: if False, modules named 'path' will not be patched with the
+            patch_path: If False, modules named 'path' will not be patched with the
                 fake 'os.path' module. Set this to False when you need to import
                 some other module named 'path', for example::
                         from my_module import path
@@ -107,7 +110,7 @@ class TestCase(unittest.TestCase):
         If you specify arguments `additional_skip_names` or `patch_path` here
         and you have DocTests, consider also specifying the same arguments to
         :py:func:`load_doctests`.
-        
+
         Example usage in a derived test class::
 
           class MyTestCase(fake_filesystem_unittest.TestCase):
@@ -140,7 +143,7 @@ class TestCase(unittest.TestCase):
           real_file_path: Path to the file in both the real and fake file systems
           fake_file_path: Deprecated.  Use the default, which is `real_file_path`.
             If a value other than `real_file_path` is specified, an `ValueError`
-            exception will be raised.  
+            exception is raised.
           create_missing_dirs: Deprecated.  Use the default, which creates missing
             directories in the fake file system.  If `False` is specified, an
             `ValueError` exception is raised.
@@ -157,7 +160,7 @@ class TestCase(unittest.TestCase):
         """
         if fake_file_path is not None and real_file_path != fake_file_path:
             raise ValueError("CopyRealFile() is deprecated and no longer supports "
-                                "different real and fake file paths") 
+                                "different real and fake file paths")
         if not create_missing_dirs:
             raise ValueError("CopyRealFile() is deprecated and no longer supports "
                                 "NOT creating missing directories")
@@ -185,14 +188,14 @@ class Patcher(object):
     """
     Instantiate a stub creator to bind and un-bind the file-related modules to
     the :py:mod:`pyfakefs` fake modules.
-    
+
     The arguments are explained in :py:class:`TestCase`.
 
     :py:class:`Patcher` is used in :py:class:`TestCase`.  :py:class:`Patcher`
     also works as a context manager for PyTest::
-    
+
         with Patcher():
-            doStuff()
+            do_stuff()
     """
     SKIPMODULES = set([None, fake_filesystem, fake_filesystem_shutil,
                        fake_tempfile, sys])
@@ -202,11 +205,11 @@ class Patcher(object):
     '''
     assert None in SKIPMODULES, "sys.modules contains 'None' values; must skip them."
 
-    HAS_PATHLIB = sys.version_info >= (3, 4)
-
-    # To add py.test support per issue https://github.com/jmcgeheeiv/pyfakefs/issues/43,
-    # it appears that adding  'py', 'pytest', '_pytest' to SKIPNAMES will help
     SKIPNAMES = set(['os', 'path', 'tempfile', 'io', 'genericpath'])
+    '''Names of modules inside of which no module replacement shall be
+    performed.
+    '''
+    HAS_PATHLIB = sys.version_info >= (3, 4)
     if HAS_PATHLIB:
         SKIPNAMES.add('pathlib')
 
