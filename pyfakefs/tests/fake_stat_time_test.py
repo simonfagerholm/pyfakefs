@@ -2,6 +2,7 @@
 """
 test to verify correct time updates
 """
+from __future__ import print_function
 from collections import namedtuple
 import os
 import tempfile
@@ -25,7 +26,7 @@ class BaseTestTime(TestCase):
             os.remove(os.path.join(self.test_dir, path))
         os.rmdir(self.test_dir)
         if os.path.exists(self.test_dir):
-            print 'Cleanup failed'
+            print('Cleanup failed')
 
     @staticmethod
     def stat_time(path):

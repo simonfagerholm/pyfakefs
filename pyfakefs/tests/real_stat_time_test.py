@@ -2,6 +2,7 @@
 """
 test to verify correct time updates
 """
+from __future__ import print_function
 from collections import namedtuple
 import os
 import tempfile
@@ -10,7 +11,7 @@ import unittest
 
 FileTime = namedtuple('FileTime', 'st_ctime, st_atime, st_mtime')
 
-SLEEP_TIME = 0.01
+SLEEP_TIME = 0.05
 
 
 class BaseTestTime(unittest.TestCase):
@@ -22,7 +23,7 @@ class BaseTestTime(unittest.TestCase):
             os.remove(os.path.join(self.test_dir, path))
         os.rmdir(self.test_dir)
         if os.path.exists(self.test_dir):
-            print 'Cleanup failed'
+            print('Cleanup failed')
 
     @staticmethod
     def stat_time(path):
@@ -993,8 +994,8 @@ class TestModeAPlus(BaseTestTime):
     def test_open_write_flush_close(self):
         """
         When a file is opened with 'a+' mode and it does already exist
-        and is then written to st_ctime and st_mtime is updated on open
-        (trucating) and flush, but not when written to or when closed.
+        and is then written to st_ctime and st_mtime is updated on flush,
+        but not when opened, written to or when closed.
         """
         # setup
         file_path = os.path.join(self.test_dir, 'some_file')
