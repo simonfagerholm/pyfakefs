@@ -31,6 +31,8 @@ from pyfakefs.tests import fake_filesystem_unittest_test
 from pyfakefs.tests import fake_tempfile_test
 from pyfakefs.tests import fake_filesystem_vs_real_test
 from pyfakefs.tests import mox3_stubout_test
+from pyfakefs.tests import fake_stat_time_test
+from pyfakefs.tests import real_stat_time_test
 
 if pathlib:
     from pyfakefs.tests import fake_pathlib_test
@@ -53,6 +55,8 @@ class AllTests(unittest.TestSuite):
             loader.loadTestsFromModule(example_test),
             loader.loadTestsFromModule(mox3_stubout_test),
             loader.loadTestsFromModule(dynamic_patch_test),
+            loader.loadTestsFromModule(fake_stat_time_test),
+            loader.loadTestsFromModule(real_stat_time_test),
         ])
         if pathlib:
             self.addTests([
