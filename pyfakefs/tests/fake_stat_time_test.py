@@ -13,7 +13,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 FileTime = namedtuple('FileTime', 'st_ctime, st_atime, st_mtime')
 
-SLEEP_TIME = 0.01
+SLEEP_TIME = 2
 
 
 class BaseTestTime(TestCase):

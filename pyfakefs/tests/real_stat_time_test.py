@@ -11,7 +11,7 @@ import unittest
 
 FileTime = namedtuple('FileTime', 'st_ctime, st_atime, st_mtime')
 
-SLEEP_TIME = 0.05
+SLEEP_TIME = 2
 
 
 class BaseTestTime(unittest.TestCase):
